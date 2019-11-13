@@ -4,8 +4,9 @@ const router = express.Router();
 const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 
 router.get('/', rejectUnauthenticated, (req, res) => {
-    console.log('req.user:', req.user);
-    pool.query('SELECT * FROM "secret";')
+    console.log('req.user:', req.user.clearance_level);
+    pool.query(`SELECT * FROM "secret"
+                WHERE secrecy_level < $1;`, [req.user.clearance_level])
         .then(results => res.send(results.rows))
         .catch(error => {
             console.log('Error making SELECT for secrets:', error);
